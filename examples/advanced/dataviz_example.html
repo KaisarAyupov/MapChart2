@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Dataviz example with jQuery Mapael</title>
+    <meta charset="utf-8"/>
+    <style type="text/css">
+
+        h1 {
+            font-size: 30px;
+            color: #613b1e;
+            margin: 20px auto 20px auto;
+            display: block;
+            text-align: center;
+        }
+
+        h2 {
+            margin: 0;
+            padding: 0;
+            font-size: 22px;
+            color: #343434;
+
+        }
+
+        .container {
+            width: 90%;
+            overflow: hidden;
+            min-width: 700px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .knobContainer {
+            text-align: center;
+            margin: 10px;
+        }
+
+        .knobContainer canvas {
+            cursor: pointer;
+        }
+
+        .rightPanel {
+            float: right;
+            width: 223px;
+            border-radius: 5px;
+            margin-left: 5px;
+        }
+
+        /* Specific mapael css class are below
+         * 'mapael' class is added by plugin
+        */
+        
+        .mapael .mapTooltip {
+            position: absolute;
+            background-color: #fff;
+            moz-opacity: 0.80;
+            opacity: 0.80;
+            filter: alpha(opacity=80);
+            border-radius: 4px;
+            padding: 10px;
+            z-index: 1000;
+            max-width: 200px;
+            display: none;
+            color: #232323;
+        }
+        
+        .mapael .map {
+            margin-right: 228px;
+            overflow: hidden;
+            position: relative;
+            background-color: #232323;
+            border-radius: 5px;
+        }
+
+        /* For all zoom buttons */
+        .mapael .zoomButton {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            color: #000;
+            width: 15px;
+            height: 15px;
+            line-height: 15px;
+            text-align: center;
+            border-radius: 3px;
+            cursor: pointer;
+            position: absolute;
+            top: 0;
+            font-weight: bold;
+            left: 10px;
+
+            -webkit-user-select: none;
+            -khtml-user-select : none;
+            -moz-user-select: none;
+            -o-user-select : none;
+            user-select: none;
+        }
+
+        /* Reset Zoom button first */
+        .mapael .zoomReset {
+            top: 10px;
+        }
+
+        /* Then Zoom In button */
+        .mapael .zoomIn {
+            top: 30px;
+        }
+
+        /* Then Zoom Out button */
+        .mapael .zoomOut {
+            top: 50px;
+        }
+        
+    </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-mousewheel/3.1.13/jquery.mousewheel.min.js"
+            charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js" charset="utf-8"></script>
+    <script src="../../js/jquery.mapael.js" charset="utf-8"></script>
+    <script src="https://rawgit.com/aterrien/jQuery-Knob/master/dist/jquery.knob.min.js" charset="utf-8"></script>
+    <script src="../../js/maps/regionadm1.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+        $(function () {
+
+            // Fake data for countries and cities from 2003 to 2013
+            var data = {
+                "2003": {
+                    "areas": {
+                        "630000000": {
+                            value: "1383745",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Восточно-Казахстанская область (63)</span><br />Population : 1383745" }
+                        },
+                        "310000000": {
+                            value: "11107220",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Жамбылская область (31)</span><br />Population : 1117220" }
+                        },
+                        "610000000": {
+                            value: "2929196",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Туркестанская область (61)</span><br />Population : 2929196" }
+                        },
+                        "430000000": {
+                            value: "783156",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Кызылординская область (43)</span><br />Population : 783156" }
+                        },
+                        "150000000": {
+                            value: "857711",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Актюбинская область (15)</span><br />Population : 857711" }
+                        },
+                        "590000000": {
+                            value: "558584",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Северо-Казахстанская область (59)</span><br />Population : 558584" }
+                        },
+                        "390000000": {
+                            value: "8075616",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Костанайская область (39)</span><br />Population : 875616" }
+                        },
+                        "550000000": {
+                            value: "754854",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Павлодарская область (55)</span><br />Population : 754854" }
+                        },
+                        "270000000": {
+                            value: "6460927",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Западно-Казахстанская область (27)</span><br />Population : 646927" }
+                        },
+                        "350000000": {
+                            value: "13805038",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Карагандинская область (35)</span><br />Population : 1380538" }
+                        },
+                        "750000000": {
+                            value: "1801993",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">г.Алматы (75)</span><br />Population : 1801993" }
+                        },
+                        "710000000": {
+                            value: "1030577",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">г.Астана (71)</span><br />Population : 1030577" }
+                        },
+                        "230000000": {
+                            value: "620684",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Атырауская область (23)</span><br />Population : 620684" }
+                        },
+                        "470000000": {
+                            value: "660317",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Мангистауская область (47)</span><br />Population : 660317" }
+                        },
+                        "190000000": {
+                            value: "2017277",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Алматинская область (19)</span><br />Population : 2017277" }
+                        },
+                        "110000000": {
+                            value: "738942",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Акмолинская область (11)</span><br />Population : 738942" }
+                        }
+                    },
+                    "plots": {
+                        "almaty": {
+                            "value": 448389,
+                            "tooltip": {
+                                "content": "<span style=\"font-weight:bold;\">almaty</span><br />Population: 1448389"
+                            }
+                        },
+                        "astana": {
+                            "value": 1426800,
+                            "tooltip": {
+                                "content": "<span style=\"font-weight:bold;\">New-York</span><br />Population: 426800"
+                            }
+                        }                        
+                    }
+                },
+                "2004": {
+                    "areas": {
+                        "630000000": {
+                            value: "1383745",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Восточно-Казахстанская область (63)</span><br />Population : 1383745" }
+                        },
+                        "310000000": {
+                            value: "11107220",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Жамбылская область (31)</span><br />Population : 1117220" }
+                        },
+                        "610000000": {
+                            value: "2929196",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Туркестанская область (61)</span><br />Population : 2929196" }
+                        },
+                        "430000000": {
+                            value: "783156",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Кызылординская область (43)</span><br />Population : 783156" }
+                        },
+                        "150000000": {
+                            value: "857711",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Актюбинская область (15)</span><br />Population : 857711" }
+                        },
+                        "590000000": {
+                            value: "558584",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Северо-Казахстанская область (59)</span><br />Population : 558584" }
+                        },
+                        "390000000": {
+                            value: "8075616",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Костанайская область (39)</span><br />Population : 875616" }
+                        },
+                        "550000000": {
+                            value: "754854",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Павлодарская область (55)</span><br />Population : 754854" }
+                        },
+                        "270000000": {
+                            value: "6460927",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Западно-Казахстанская область (27)</span><br />Population : 646927" }
+                        },
+                        "350000000": {
+                            value: "13805038",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Карагандинская область (35)</span><br />Population : 1380538" }
+                        },
+                        "750000000": {
+                            value: "1801993",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">г.Алматы (75)</span><br />Population : 1801993" }
+                        },
+                        "710000000": {
+                            value: "1030577",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">г.Астана (71)</span><br />Population : 1030577" }
+                        },
+                        "230000000": {
+                            value: "620684",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Атырауская область (23)</span><br />Population : 620684" }
+                        },
+                        "470000000": {
+                            value: "660317",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Мангистауская область (47)</span><br />Population : 660317" }
+                        },
+                        "190000000": {
+                            value: "2017277",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Алматинская область (19)</span><br />Population : 2017277" }
+                        },
+                        "110000000": {
+                            value: "738942",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Акмолинская область (11)</span><br />Population : 738942" }
+                        }
+                    },
+                    "plots": {
+                        "almaty": {
+                            "value": 1448389,
+                            "tooltip": {
+                                "content": "<span style=\"font-weight:bold;\">almaty</span><br />Population: 1448389"
+                            }
+                        },
+                        "astana": {
+                            "value": 426800,
+                            "tooltip": {
+                                "content": "<span style=\"font-weight:bold;\">New-York</span><br />Population: 426800"
+                            }
+                        }
+                    }
+                },
+                "2005": {
+                    "areas": {
+                        "630000000": {
+                            value: "1383745",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Восточно-Казахстанская область (63)</span><br />Population : 1383745" }
+                        },
+                        "310000000": {
+                            value: "1117220",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Жамбылская область (31)</span><br />Population : 1117220" }
+                        },
+                        "610000000": {
+                            value: "29290196",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Туркестанская область (61)</span><br />Population : 2929196" }
+                        },
+                        "430000000": {
+                            value: "7831056",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Кызылординская область (43)</span><br />Population : 783156" }
+                        },
+                        "150000000": {
+                            value: "857711",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Актюбинская область (15)</span><br />Population : 857711" }
+                        },
+                        "590000000": {
+                            value: "558584",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Северо-Казахстанская область (59)</span><br />Population : 558584" }
+                        },
+                        "390000000": {
+                            value: "8756016",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Костанайская область (39)</span><br />Population : 875616" }
+                        },
+                        "550000000": {
+                            value: "7504854",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Павлодарская область (55)</span><br />Population : 754854" }
+                        },
+                        "270000000": {
+                            value: "646927",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Западно-Казахстанская область (27)</span><br />Population : 646927" }
+                        },
+                        "350000000": {
+                            value: "13800538",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Карагандинская область (35)</span><br />Population : 1380538" }
+                        },
+                        "750000000": {
+                            value: "1801993",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">г.Алматы (75)</span><br />Population : 1801993" }
+                        },
+                        "710000000": {
+                            value: "1030577",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">г.Астана (71)</span><br />Population : 1030577" }
+                        },
+                        "230000000": {
+                            value: "620684",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Атырауская область (23)</span><br />Population : 620684" }
+                        },
+                        "470000000": {
+                            value: "660317",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Мангистауская область (47)</span><br />Population : 660317" }
+                        },
+                        "190000000": {
+                            value: "2017277",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Алматинская область (19)</span><br />Population : 2017277" }
+                        },
+                        "110000000": {
+                            value: "738942",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Акмолинская область (11)</span><br />Population : 738942" }
+                        }
+                    },
+                    "plots": {
+                        "almaty": {
+                            "value": 1448389,
+                            "tooltip": {
+                                "content": "<span style=\"font-weight:bold;\">almaty</span><br />Population: 1448389"
+                            }
+                        },
+                        "astana": {
+                            "value": 426800,
+                            "tooltip": {
+                                "content": "<span style=\"font-weight:bold;\">New-York</span><br />Population: 426800"
+                            }
+                        }
+                    }
+                },
+                "2006": {
+                    "areas": {
+                        "630000000": {
+                            value: "13830745",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Восточно-Казахстанская область (63)</span><br />Population : 1383745" }
+                        },
+                        "310000000": {
+                            value: "11172020",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Жамбылская область (31)</span><br />Population : 1117220" }
+                        },
+                        "610000000": {
+                            value: "2929196",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Туркестанская область (61)</span><br />Population : 2929196" }
+                        },
+                        "430000000": {
+                            value: "783156",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Кызылординская область (43)</span><br />Population : 783156" }
+                        },
+                        "150000000": {
+                            value: "857711",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Актюбинская область (15)</span><br />Population : 857711" }
+                        },
+                        "590000000": {
+                            value: "558584",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Северо-Казахстанская область (59)</span><br />Population : 558584" }
+                        },
+                        "390000000": {
+                            value: "8756016",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Костанайская область (39)</span><br />Population : 875616" }
+                        },
+                        "550000000": {
+                            value: "754854",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Павлодарская область (55)</span><br />Population : 754854" }
+                        },
+                        "270000000": {
+                            value: "646927",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Западно-Казахстанская область (27)</span><br />Population : 646927" }
+                        },
+                        "350000000": {
+                            value: "13805308",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Карагандинская область (35)</span><br />Population : 1380538" }
+                        },
+                        "750000000": {
+                            value: "1801993",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">г.Алматы (75)</span><br />Population : 1801993" }
+                        },
+                        "710000000": {
+                            value: "1030577",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">г.Астана (71)</span><br />Population : 1030577" }
+                        },
+                        "230000000": {
+                            value: "620684",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Атырауская область (23)</span><br />Population : 620684" }
+                        },
+                        "470000000": {
+                            value: "660317",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Мангистауская область (47)</span><br />Population : 660317" }
+                        },
+                        "190000000": {
+                            value: "2017277",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Алматинская область (19)</span><br />Population : 2017277" }
+                        },
+                        "110000000": {
+                            value: "738942",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Акмолинская область (11)</span><br />Population : 738942" }
+                        }
+                    },
+                    "plots": {
+                        "almaty": {
+                            "value": 1448389,
+                            "tooltip": {
+                                "content": "<span style=\"font-weight:bold;\">almaty</span><br />Population: 1448389"
+                            }
+                        },
+                        "astana": {
+                            "value": 426800,
+                            "tooltip": {
+                                "content": "<span style=\"font-weight:bold;\">New-York</span><br />Population: 426800"
+                            }
+                        }
+                    }
+                },
+                "2007": {
+                    "areas": {
+                        "630000000": {
+                            value: "1383745",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Восточно-Казахстанская область (63)</span><br />Population : 1383745" }
+                        },
+                        "310000000": {
+                            value: "1117220",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Жамбылская область (31)</span><br />Population : 1117220" }
+                        },
+                        "610000000": {
+                            value: "2929196",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Туркестанская область (61)</span><br />Population : 2929196" }
+                        },
+                        "430000000": {
+                            value: "7831056",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Кызылординская область (43)</span><br />Population : 783156" }
+                        },
+                        "150000000": {
+                            value: "8577011",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Актюбинская область (15)</span><br />Population : 857711" }
+                        },
+                        "590000000": {
+                            value: "558584",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Северо-Казахстанская область (59)</span><br />Population : 558584" }
+                        },
+                        "390000000": {
+                            value: "875616",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Костанайская область (39)</span><br />Population : 875616" }
+                        },
+                        "550000000": {
+                            value: "7548054",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Павлодарская область (55)</span><br />Population : 754854" }
+                        },
+                        "270000000": {
+                            value: "646927",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Западно-Казахстанская область (27)</span><br />Population : 646927" }
+                        },
+                        "350000000": {
+                            value: "1380538",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Карагандинская область (35)</span><br />Population : 1380538" }
+                        },
+                        "750000000": {
+                            value: "1801993",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">г.Алматы (75)</span><br />Population : 1801993" }
+                        },
+                        "710000000": {
+                            value: "1030577",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">г.Астана (71)</span><br />Population : 1030577" }
+                        },
+                        "230000000": {
+                            value: "620684",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Атырауская область (23)</span><br />Population : 620684" }
+                        },
+                        "470000000": {
+                            value: "660317",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Мангистауская область (47)</span><br />Population : 660317" }
+                        },
+                        "190000000": {
+                            value: "2017277",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Алматинская область (19)</span><br />Population : 2017277" }
+                        },
+                        "110000000": {
+                            value: "738942",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Акмолинская область (11)</span><br />Population : 738942" }
+                        }
+                    },
+                    "plots": {
+                        "almaty": {
+                            "value": 1448389,
+                            "tooltip": {
+                                "content": "<span style=\"font-weight:bold;\">almaty</span><br />Population: 1448389"
+                            }
+                        },
+                        "astana": {
+                            "value": 426800,
+                            "tooltip": {
+                                "content": "<span style=\"font-weight:bold;\">New-York</span><br />Population: 426800"
+                            }
+                        }
+                    }
+                },
+                "2008": {
+                    "areas": {
+                        "630000000": {
+                            value: "1383745",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Восточно-Казахстанская область (63)</span><br />Population : 1383745" }
+                        },
+                        "310000000": {
+                            value: "1117220",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Жамбылская область (31)</span><br />Population : 1117220" }
+                        },
+                        "610000000": {
+                            value: "2929196",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Туркестанская область (61)</span><br />Population : 2929196" }
+                        },
+                        "430000000": {
+                            value: "783156",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Кызылординская область (43)</span><br />Population : 783156" }
+                        },
+                        "150000000": {
+                            value: "8570711",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Актюбинская область (15)</span><br />Population : 857711" }
+                        },
+                        "590000000": {
+                            value: "558584",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Северо-Казахстанская область (59)</span><br />Population : 558584" }
+                        },
+                        "390000000": {
+                            value: "8750616",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Костанайская область (39)</span><br />Population : 875616" }
+                        },
+                        "550000000": {
+                            value: "754854",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Павлодарская область (55)</span><br />Population : 754854" }
+                        },
+                        "270000000": {
+                            value: "646927",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Западно-Казахстанская область (27)</span><br />Population : 646927" }
+                        },
+                        "350000000": {
+                            value: "1380538",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Карагандинская область (35)</span><br />Population : 1380538" }
+                        },
+                        "750000000": {
+                            value: "1801993",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">г.Алматы (75)</span><br />Population : 1801993" }
+                        },
+                        "710000000": {
+                            value: "1030577",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">г.Астана (71)</span><br />Population : 1030577" }
+                        },
+                        "230000000": {
+                            value: "620684",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Атырауская область (23)</span><br />Population : 620684" }
+                        },
+                        "470000000": {
+                            value: "660317",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Мангистауская область (47)</span><br />Population : 660317" }
+                        },
+                        "190000000": {
+                            value: "2017277",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Алматинская область (19)</span><br />Population : 2017277" }
+                        },
+                        "110000000": {
+                            value: "738942",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Акмолинская область (11)</span><br />Population : 738942" }
+                        }
+                    },
+                    "plots": {
+                        "almaty": {
+                            "value": 1448389,
+                            "tooltip": {
+                                "content": "<span style=\"font-weight:bold;\">almaty</span><br />Population: 1448389"
+                            }
+                        },
+                        "astana": {
+                            "value": 426800,
+                            "tooltip": {
+                                "content": "<span style=\"font-weight:bold;\">New-York</span><br />Population: 426800"
+                            }
+                        }
+                    }
+                },
+                "2009": {
+                    "areas": {
+                        "630000000": {
+                            value: "1383745",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Восточно-Казахстанская область (63)</span><br />Population : 1383745" }
+                        },
+                        "310000000": {
+                            value: "1117220",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Жамбылская область (31)</span><br />Population : 1117220" }
+                        },
+                        "610000000": {
+                            value: "2929196",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Туркестанская область (61)</span><br />Population : 2929196" }
+                        },
+                        "430000000": {
+                            value: "783156",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Кызылординская область (43)</span><br />Population : 783156" }
+                        },
+                        "150000000": {
+                            value: "857711",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Актюбинская область (15)</span><br />Population : 857711" }
+                        },
+                        "590000000": {
+                            value: "558584",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Северо-Казахстанская область (59)</span><br />Population : 558584" }
+                        },
+                        "390000000": {
+                            value: "875616",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Костанайская область (39)</span><br />Population : 875616" }
+                        },
+                        "550000000": {
+                            value: "754854",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Павлодарская область (55)</span><br />Population : 754854" }
+                        },
+                        "270000000": {
+                            value: "646927",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Западно-Казахстанская область (27)</span><br />Population : 646927" }
+                        },
+                        "350000000": {
+                            value: "1380538",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Карагандинская область (35)</span><br />Population : 1380538" }
+                        },
+                        "750000000": {
+                            value: "1801993",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">г.Алматы (75)</span><br />Population : 1801993" }
+                        },
+                        "710000000": {
+                            value: "1030577",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">г.Астана (71)</span><br />Population : 1030577" }
+                        },
+                        "230000000": {
+                            value: "620684",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Атырауская область (23)</span><br />Population : 620684" }
+                        },
+                        "470000000": {
+                            value: "660317",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Мангистауская область (47)</span><br />Population : 660317" }
+                        },
+                        "190000000": {
+                            value: "2017277",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Алматинская область (19)</span><br />Population : 2017277" }
+                        },
+                        "110000000": {
+                            value: "738942",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Акмолинская область (11)</span><br />Population : 738942" }
+                        }
+                    },
+                    "plots": {
+                        "almaty": {
+                            "value": 1448389,
+                            "tooltip": {
+                                "content": "<span style=\"font-weight:bold;\">almaty</span><br />Population: 1448389"
+                            }
+                        },
+                        "astana": {
+                            "value": 426800,
+                            "tooltip": {
+                                "content": "<span style=\"font-weight:bold;\">New-York</span><br />Population: 426800"
+                            }
+                        }
+                    }
+                },
+                "2010": {
+                    "areas": {
+                        "630000000": {
+                            value: "13830745",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Восточно-Казахстанская область (63)</span><br />Population : 1383745" }
+                        },
+                        "310000000": {
+                            value: "11170220",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Жамбылская область (31)</span><br />Population : 1117220" }
+                        },
+                        "610000000": {
+                            value: "2929196",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Туркестанская область (61)</span><br />Population : 2929196" }
+                        },
+                        "430000000": {
+                            value: "783156",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Кызылординская область (43)</span><br />Population : 783156" }
+                        },
+                        "150000000": {
+                            value: "8570711",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Актюбинская область (15)</span><br />Population : 857711" }
+                        },
+                        "590000000": {
+                            value: "558584",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Северо-Казахстанская область (59)</span><br />Population : 558584" }
+                        },
+                        "390000000": {
+                            value: "875616",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Костанайская область (39)</span><br />Population : 875616" }
+                        },
+                        "550000000": {
+                            value: "754854",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Павлодарская область (55)</span><br />Population : 754854" }
+                        },
+                        "270000000": {
+                            value: "646927",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Западно-Казахстанская область (27)</span><br />Population : 646927" }
+                        },
+                        "350000000": {
+                            value: "1380538",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Карагандинская область (35)</span><br />Population : 1380538" }
+                        },
+                        "750000000": {
+                            value: "1801993",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">г.Алматы (75)</span><br />Population : 1801993" }
+                        },
+                        "710000000": {
+                            value: "1030577",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">г.Астана (71)</span><br />Population : 1030577" }
+                        },
+                        "230000000": {
+                            value: "620684",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Атырауская область (23)</span><br />Population : 620684" }
+                        },
+                        "470000000": {
+                            value: "660317",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Мангистауская область (47)</span><br />Population : 660317" }
+                        },
+                        "190000000": {
+                            value: "2017277",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Алматинская область (19)</span><br />Population : 2017277" }
+                        },
+                        "110000000": {
+                            value: "738942",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Акмолинская область (11)</span><br />Population : 738942" }
+                        }
+                    },
+                    "plots": {
+                        "almaty": {
+                            "value": 148389,
+                            "tooltip": {
+                                "content": "<span style=\"font-weight:bold;\">almaty</span><br />Population: 1448389"
+                            }
+                        },
+                        "astana": {
+                            "value": 1426800,
+                            "tooltip": {
+                                "content": "<span style=\"font-weight:bold;\">New-York</span><br />Population: 426800"
+                            }
+                        }
+                    }
+                },
+                "2011": {
+                    "areas": {
+                        "630000000": {
+                            value: "1383745",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Восточно-Казахстанская область (63)</span><br />Population : 1383745" }
+                        },
+                        "310000000": {
+                            value: "1117220",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Жамбылская область (31)</span><br />Population : 1117220" }
+                        },
+                        "610000000": {
+                            value: "2929196",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Туркестанская область (61)</span><br />Population : 2929196" }
+                        },
+                        "430000000": {
+                            value: "783156",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Кызылординская область (43)</span><br />Population : 783156" }
+                        },
+                        "150000000": {
+                            value: "857711",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Актюбинская область (15)</span><br />Population : 857711" }
+                        },
+                        "590000000": {
+                            value: "558584",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Северо-Казахстанская область (59)</span><br />Population : 558584" }
+                        },
+                        "390000000": {
+                            value: "875616",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Костанайская область (39)</span><br />Population : 875616" }
+                        },
+                        "550000000": {
+                            value: "754854",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Павлодарская область (55)</span><br />Population : 754854" }
+                        },
+                        "270000000": {
+                            value: "646927",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Западно-Казахстанская область (27)</span><br />Population : 646927" }
+                        },
+                        "350000000": {
+                            value: "1380538",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Карагандинская область (35)</span><br />Population : 1380538" }
+                        },
+                        "750000000": {
+                            value: "1801993",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">г.Алматы (75)</span><br />Population : 1801993" }
+                        },
+                        "710000000": {
+                            value: "1030577",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">г.Астана (71)</span><br />Population : 1030577" }
+                        },
+                        "230000000": {
+                            value: "620684",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Атырауская область (23)</span><br />Population : 620684" }
+                        },
+                        "470000000": {
+                            value: "660317",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Мангистауская область (47)</span><br />Population : 660317" }
+                        },
+                        "190000000": {
+                            value: "2017277",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Алматинская область (19)</span><br />Population : 2017277" }
+                        },
+                        "110000000": {
+                            value: "738942",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Акмолинская область (11)</span><br />Population : 738942" }
+                        }
+                    },
+                    "plots": {
+                        "almaty": {
+                            "value": 1448389,
+                            "tooltip": {
+                                "content": "<span style=\"font-weight:bold;\">almaty</span><br />Population: 1448389"
+                            }
+                        },
+                        "astana": {
+                            "value": 426800,
+                            "tooltip": {
+                                "content": "<span style=\"font-weight:bold;\">New-York</span><br />Population: 426800"
+                            }
+                        }
+                    }
+                },
+                "2012": {
+                    "areas": {
+                        "630000000": {
+                            value: "1383745",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Восточно-Казахстанская область (63)</span><br />Population : 1383745" }
+                        },
+                        "310000000": {
+                            value: "1117220",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Жамбылская область (31)</span><br />Population : 1117220" }
+                        },
+                        "610000000": {
+                            value: "29209196",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Туркестанская область (61)</span><br />Population : 2929196" }
+                        },
+                        "430000000": {
+                            value: "783156",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Кызылординская область (43)</span><br />Population : 783156" }
+                        },
+                        "150000000": {
+                            value: "857711",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Актюбинская область (15)</span><br />Population : 857711" }
+                        },
+                        "590000000": {
+                            value: "5580584",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Северо-Казахстанская область (59)</span><br />Population : 558584" }
+                        },
+                        "390000000": {
+                            value: "875616",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Костанайская область (39)</span><br />Population : 875616" }
+                        },
+                        "550000000": {
+                            value: "7548054",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Павлодарская область (55)</span><br />Population : 754854" }
+                        },
+                        "270000000": {
+                            value: "646927",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Западно-Казахстанская область (27)</span><br />Population : 646927" }
+                        },
+                        "350000000": {
+                            value: "1380538",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Карагандинская область (35)</span><br />Population : 1380538" }
+                        },
+                        "750000000": {
+                            value: "1801993",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">г.Алматы (75)</span><br />Population : 1801993" }
+                        },
+                        "710000000": {
+                            value: "1030577",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">г.Астана (71)</span><br />Population : 1030577" }
+                        },
+                        "230000000": {
+                            value: "620684",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Атырауская область (23)</span><br />Population : 620684" }
+                        },
+                        "470000000": {
+                            value: "660317",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Мангистауская область (47)</span><br />Population : 660317" }
+                        },
+                        "190000000": {
+                            value: "2017277",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Алматинская область (19)</span><br />Population : 2017277" }
+                        },
+                        "110000000": {
+                            value: "738942",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Акмолинская область (11)</span><br />Population : 738942" }
+                        }
+                    },
+                    "plots": {
+                        "almaty": {
+                            "value": 648389,
+                            "tooltip": {
+                                "content": "<span style=\"font-weight:bold;\">almaty</span><br />Population: 1448389"
+                            }
+                        },
+                        "astana": {
+                            "value": 1426800,
+                            "tooltip": {
+                                "content": "<span style=\"font-weight:bold;\">New-York</span><br />Population: 426800"
+                            }
+                        }
+                    }
+                },
+                "2013": {
+                    "areas": {
+                        "630000000": {
+                            value: "1383745",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Восточно-Казахстанская область (63)</span><br />Population : 1383745" }
+                        },
+                        "310000000": {
+                            value: "1117220",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Жамбылская область (31)</span><br />Population : 1117220" }
+                        },
+                        "610000000": {
+                            value: "2929196",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Туркестанская область (61)</span><br />Population : 2929196" }
+                        },
+                        "430000000": {
+                            value: "7831056",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Кызылординская область (43)</span><br />Population : 783156" }
+                        },
+                        "150000000": {
+                            value: "8570711",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Актюбинская область (15)</span><br />Population : 857711" }
+                        },
+                        "590000000": {
+                            value: "558584",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Северо-Казахстанская область (59)</span><br />Population : 558584" }
+                        },
+                        "390000000": {
+                            value: "875616",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Костанайская область (39)</span><br />Population : 875616" }
+                        },
+                        "550000000": {
+                            value: "754854",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Павлодарская область (55)</span><br />Population : 754854" }
+                        },
+                        "270000000": {
+                            value: "6460927",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Западно-Казахстанская область (27)</span><br />Population : 646927" }
+                        },
+                        "350000000": {
+                            value: "1380538",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Карагандинская область (35)</span><br />Population : 1380538" }
+                        },
+                        "750000000": {
+                            value: "1801993",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">г.Алматы (75)</span><br />Population : 1801993" }
+                        },
+                        "710000000": {
+                            value: "1030577",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">г.Астана (71)</span><br />Population : 1030577" }
+                        },
+                        "230000000": {
+                            value: "620684",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Атырауская область (23)</span><br />Population : 620684" }
+                        },
+                        "470000000": {
+                            value: "660317",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Мангистауская область (47)</span><br />Population : 660317" }
+                        },
+                        "190000000": {
+                            value: "2017277",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Алматинская область (19)</span><br />Population : 2017277" }
+                        },
+                        "110000000": {
+                            value: "738942",
+                            href: "#",
+                            tooltip: { content: "<span style=\"font-weight:bold;\">Акмолинская область (11)</span><br />Population : 738942" }
+                        }
+                    },
+                    "plots": {
+                        "almaty": {
+                            "value": 1448389,
+                            "tooltip": {
+                                "content": "<span style=\"font-weight:bold;\">almaty</span><br />Population: 1448389"
+                            }
+                        },
+                        "astana": {
+                            "value": 426800,
+                            "tooltip": {
+                                "content": "<span style=\"font-weight:bold;\">New-York</span><br />Population: 426800"
+                            }
+                        }
+                    }
+                }
+            };
+
+            // Default plots params
+            var plots = {
+                "almaty": {
+                    "latitude": 412.33,
+                    "longitude": 654.11,
+                    "text": {
+                        "position": "left",
+                        "content": "Almaty"
+                    },
+                    "href": "https://ru.wikipedia.org/wiki/%D0%90%D0%BB%D0%BC%D0%B0-%D0%90%D1%82%D0%B0"
+                },
+                "astana": {
+                    "latitude": 168.758888888889,
+                    "longitude": 536.8413888888889,
+                    "text": {
+                        "content": "Astana"
+                    },
+                    "href": "https://ru.wikipedia.org/wiki/%D0%90%D1%81%D1%82%D0%B0%D0%BD%D0%B0"
+                },
+                
+            };
+
+            // Knob initialisation (for selecting a year)
+            $(".knob").knob({
+                release: function (value) {
+                    $(".world").trigger('update', [{
+                        mapOptions: data[value],
+                        animDuration: 300
+                    }]);
+                }
+            });
+
+            // Mapael initialisation
+            $world = $(".world");
+            $world.mapael({
+                map: {
+                    name: "regionadm1",
+                    defaultArea: {
+                        attrs: {
+                            fill: "#fff",
+                            stroke: "#232323",
+                            "stroke-width": 0.3
+                        }
+                    },
+                    defaultPlot: {
+                        text: {
+                            attrs: {
+                                fill: "#b4b4b4",
+                                "font-weight": "normal"
+                            },
+                            attrsHover: {
+                                fill: "#fff",
+                                "font-weight": "bold"
+                            }
+                        }
+                    }
+                    , zoom: {
+                        enabled: true
+                        , step: 0.25
+                        , maxLevel: 20
+                    }
+                },
+                legend: {
+                    area: {
+                        display: true,
+                        title: "Численность населения РK",
+                        slices: [
+                            {
+                                max: 600000,
+                                attrs: {
+                                    fill: "#97e766"
+                                },
+                                label: "Менее 600 000 жителей"
+                            },
+                            {
+                                min: 600000,
+                                max: 800000,
+                                attrs: {
+                                    fill: "#7fd34d"
+                                },
+                                label: "Между 600 000 и 800 000"
+                            },
+                            {
+                                min: 800000,
+                                max: 1000000,
+                                attrs: {
+                                    fill: "#5faa32"
+                                },
+                                label: "Между 800 000 and 1 000 000"
+                            },
+                            {
+                                min: 1000000,
+                                attrs: {
+                                    fill: "#3f7d1a"
+                                },
+                                label: "Более 1 миллиона жителей"
+                            }
+                        ]
+                    },
+                    plot: {
+                        display: true,
+                        title: "Численность города",
+                        marginBottom: 6,
+                        slices: [
+                            {
+                                type: "circle",
+                                max: 500000,
+                                attrs: {
+                                    fill: "#FD4851",
+                                    "stroke-width": 1
+                                },
+                                attrsHover: {
+                                    transform: "s1.5",
+                                    "stroke-width": 1
+                                },
+                                label: "Менее 500 000 жителей",
+                                size: 10
+                            },
+                            {
+                                type: "circle",
+                                min: 500000,
+                                max: 1000000,
+                                attrs: {
+                                    fill: "#FD4851",
+                                    "stroke-width": 1
+                                },
+                                attrsHover: {
+                                    transform: "s1.5",
+                                    "stroke-width": 1
+                                },
+                                label: "Между 500 000 and 1 000 000",
+                                size: 20
+                            },
+                            {
+                                type: "circle",
+                                min: 1000000,
+                                attrs: {
+                                    fill: "#FD4851",
+                                    "stroke-width": 1
+                                },
+                                attrsHover: {
+                                    transform: "s1.5",
+                                    "stroke-width": 1
+                                },
+                                label: "Более 1 миллиона жителей",
+                                size: 30
+                            }
+                        ]
+                    }
+                },
+                plots: $.extend(true, {}, data[2009]['plots'], plots),
+                areas: data[2009]['areas']
+            });
+        });
+    </script>
+</head>
+
+<body>
+<div class="container">
+
+    <h1>Dataviz example with </h1>
+    <!-- <a href="" id="zoom-northamerica">North America</a> <a href="" id="zoom-southamerica">South America</a> <a href="" id="zoom-europe">Europe</a> <a href="" id="zoom-asia">Asia</a> <a href="" id="zoom-africa">Africa</a>  <a href="" id="zoom-oceania">Oceania</a>-->
+    <div class="world">
+        <div class="rightPanel">
+            <h2>Select a year</h2>
+
+            <div class="knobContainer">
+                <input class="knob" data-width="80" data-height="80" data-min="2003" data-max="2013" data-cursor=true
+                       data-fgColor="#454545" data-thickness=.45 value="2009" data-bgColor="#c7e8ff"/>
+            </div>
+            <div class="areaLegend"></div>
+            <div class="plotLegend"></div>
+        </div>
+        <div class="map"></div>
+        <div style="clear: both;"></div>
+    </div>
+</div>
+
+</body>
+</html>

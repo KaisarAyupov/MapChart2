@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Use the 'eventHandlers' option to display information about plotted cities in a div on mouseover</title>
+    <style type="text/css">
+        body {
+            color: #5d5d5d;
+            font-family: Helvetica, Arial, sans-serif;
+        }
+
+        h1 {
+            font-size: 30px;
+            margin: auto;
+            margin-top: 50px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .myText {
+            background-color: #343434;
+            height: 100px;
+            padding: 10px;
+            color: #fff;
+            overflow: auto;
+            margin: 10px;
+        }
+
+        /* Specific mapael css class are below
+         * 'mapael' class is added by plugin
+        */
+
+        .mapael .map {
+            position: relative;
+        }
+
+        .mapael .mapTooltip {
+            position: absolute;
+            background-color: #fff;
+            moz-opacity: 0.70;
+            opacity: 0.70;
+            filter: alpha(opacity=70);
+            border-radius: 10px;
+            padding: 10px;
+            z-index: 1000;
+            max-width: 200px;
+            display: none;
+            color: #343434;
+        }
+    </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-mousewheel/3.1.13/jquery.mousewheel.min.js"
+            charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js" charset="utf-8"></script>
+    <script src="../../js/jquery.mapael.js" charset="utf-8"></script>
+    <script src="../../js/maps/france_departments.js" charset="utf-8"></script>
+    <script src="../../js/maps/world_countries.js" charset="utf-8"></script>
+    <script src="../../js/maps/regionadm1.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            $(".mapcontainer").mapael({
+                map: {
+                    name: "regionadm1",
+                    defaultPlot: {
+                        size: 30,
+                        eventHandlers: {
+                            mouseover: function (e, id, mapElem, textElem, elemOptions) {
+                                if (typeof elemOptions.myText != 'undefined') {
+                                    $('.myText span').html(elemOptions.myText).css({display: 'none'}).fadeIn('slow');
+                                }
+                            }
+                        }
+                    }
+                },
+                plots: {
+                    'almaty': {
+                        latitude: 412.33,
+                        longitude: 654.11,
+                        tooltip: { content: "Алма-Ата"},
+                        myText: "С 1927 по 1936 годы Алма-Ата была второй столицей Казахской АССР; с 1936 по 1991 годы — столицей Казахской ССР; с 1991 по 1997 годы — первой столицей Республики Казахстан. Алма-Ата была крупнейшим городом Казахской ССР, затем стала крупнейшим городом Республики Казахстан. "
+                    },
+                    'astana': {
+                        latitude: 168.758888888889,
+                        longitude: 536.8413888888889,
+                        tooltip: { content: "Астана"},
+                        myText: "Астана́ (каз. Астана (инф.) — «столица»; до 1961 года — Акмо́линск, в 1961—1992 годах — Целиногра́д, в 1992—1998 годах — Акмола́)[6] — столица Республики Казахстан[7] с 10 июня 1998 года. Акмолинск получил статус города 26 сентября 1862 года. Население Астаны по состоянию на 1 сентября 2018 года (исчисленное по новой методике) составляет 1 056 742 человек[8], что является вторым показателем в Казахстане после Алма-Аты."
+                    }
+                }
+            });
+        });
+    </script>
+
+</head>
+
+<body>
+<div class="container">
+
+    <h1>Отображения информации о нанесенных на карту объектах при наведении курсора</h1>
+
+    <div class="myText">
+        <span>Наведите курсор на графики на карте, чтобы отобразить информацию в этом разделе.</span></div>
+    <div class="mapcontainer">
+        <div class="map">
+            <span>Alternative content for the map</span>
+        </div>
+    </div>
+
+
+</div>
+
+
+</body>
+</html>
