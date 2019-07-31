@@ -1,0 +1,216 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Map with a legend for areas</title>
+    <style type="text/css">
+        body {
+            color: #5d5d5d;
+            font-family: Helvetica, Arial, sans-serif;
+        }
+
+        h1 {
+            font-size: 30px;
+            margin: auto;
+            margin-top: 50px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+
+        /* Specific mapael css class are below
+         * 'mapael' class is added by plugin
+        */
+
+        .mapael .map {
+            position: relative;
+        }
+
+        .mapael .mapTooltip {
+            position: absolute;
+            background-color: #fff;
+            moz-opacity: 0.70;
+            opacity: 0.70;
+            filter: alpha(opacity=70);
+            border-radius: 10px;
+            padding: 10px;
+            z-index: 1000;
+            max-width: 200px;
+            display: none;
+            color: #343434;
+        }
+    </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-mousewheel/3.1.13/jquery.mousewheel.min.js"
+            charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js" charset="utf-8"></script>
+    <script src="../../js/jquery.mapael.js" charset="utf-8"></script>
+    <script src="../../js/maps/regionadm1.js" charset="utf-8"></script>
+    <script src="../../js/maps/world_countries.js" charset="utf-8"></script>
+    <script src="../../js/maps/usa_states.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            $(".mapcontainer").mapael({
+                map: {
+                    name: "regionadm1",
+                    defaultArea: {
+                        attrs: {
+                            stroke: "#fff",
+                            "stroke-width": 1
+                        },
+                        attrsHover: {
+                            "stroke-width": 2
+                        }
+                    }
+                },
+                legend: {
+                    area: {
+                        title: "Численность населения Республики Казахстан",
+                        slices: [
+                            {
+                                max: 600000,
+                                attrs: {
+                                    fill: "#97e766"
+                                },
+                                label: "Менее 600 000 жителей"
+                            },
+                            {
+                                min: 600000,
+                                max: 800000,
+                                attrs: {
+                                    fill: "#7fd34d"
+                                },
+                                label: "Между 600 000 и 800 000 жителей"
+                            },
+                            {
+                                min: 800000,
+                                max: 1000000,
+                                attrs: {
+                                    fill: "#5faa32"
+                                },
+                                label: "Между 800 000 and 1 000 000 жителей"
+                            },
+                            {
+                                min: 1000000,
+                                attrs: {
+                                    fill: "#3f7d1a"
+                                },
+                                label: "Более 1 миллиона жителей"
+                            }
+                        ]
+                    }
+                },
+                areas: {
+                    "630000000": {
+                        value: "1383745",
+                        href: "#",
+                        tooltip: { content: "<span style=\"font-weight:bold;\">Восточно-Казахстанская область (63)</span><br />Population : 1383745"}
+                    },
+                    "310000000": {
+                        value: "1117220",
+                        href: "#",
+                        tooltip: { content: "<span style=\"font-weight:bold;\">Жамбылская область (31)</span><br />Population : 1117220"}
+                    },
+                    "610000000": {
+                        value: "2929196",
+                        href: "#",
+                        tooltip: { content: "<span style=\"font-weight:bold;\">Туркестанская область (61)</span><br />Population : 2929196"}
+                    },
+                    "430000000": {
+                        value: "783156",
+                        href: "#",
+                        tooltip: { content: "<span style=\"font-weight:bold;\">Кызылординская область (43)</span><br />Population : 783156"}
+                    },
+                    "150000000": {
+                        value: "857711",
+                        href: "#",
+                        tooltip: { content: "<span style=\"font-weight:bold;\">Актюбинская область (15)</span><br />Population : 857711"}
+                    },
+                    "590000000": {
+                        value: "558584",
+                        href: "#",
+                        tooltip: { content: "<span style=\"font-weight:bold;\">Северо-Казахстанская область (59)</span><br />Population : 558584"}
+                    },
+                    "390000000": {
+                        value: "875616",
+                        href: "#",
+                        tooltip: { content: "<span style=\"font-weight:bold;\">Костанайская область (39)</span><br />Population : 875616"}
+                    },
+                    "550000000": {
+                        value: "754854",
+                        href: "#",
+                        tooltip: { content: "<span style=\"font-weight:bold;\">Павлодарская область (55)</span><br />Population : 754854"}
+                    },
+                    "270000000": {
+                        value: "646927",
+                        href: "#",
+                        tooltip: { content: "<span style=\"font-weight:bold;\">Западно-Казахстанская область (27)</span><br />Population : 646927"}
+                    },
+                    "350000000": {
+                        value: "1380538",
+                        href: "#",
+                        tooltip: { content: "<span style=\"font-weight:bold;\">Карагандинская область (35)</span><br />Population : 1380538"}
+                    },
+                    "750000000": {
+                        value: "1801993",
+                        href: "#",
+                        tooltip: { content: "<span style=\"font-weight:bold;\">г.Алматы (75)</span><br />Population : 1801993"}
+                    },
+                    "710000000": {
+                        value: "1030577",
+                        href: "#",
+                        tooltip: { content: "<span style=\"font-weight:bold;\">г.Астана (71)</span><br />Population : 1030577"}
+                    },
+                    "230000000": {
+                        value: "620684",
+                        href: "#",
+                        tooltip: { content: "<span style=\"font-weight:bold;\">Атырауская область (23)</span><br />Population : 620684"}
+                    },
+                    "470000000": {
+                        value: "660317",
+                        href: "#",
+                        tooltip: { content: "<span style=\"font-weight:bold;\">Мангистауская область (47)</span><br />Population : 660317"}
+                    },
+                    "190000000": {
+                        value: "2017277",
+                        href: "#",
+                        tooltip: { content: "<span style=\"font-weight:bold;\">Алматинская область (19)</span><br />Population : 2017277"}
+                    },
+                    "110000000": {
+                        value: "738942",
+                        href: "#",
+                        tooltip: { content: "<span style=\"font-weight:bold;\">Акмолинская область (11)</span><br />Population : 738942"}
+                    }
+                }
+            });
+        });
+    </script>
+
+</head>
+
+<body>
+    <div class="container">
+        <h1>Численность населения Республики Казахстан*</h1>
+        <div class="mapcontainer">
+            <div class="map">
+                <span>Alternative content for the map</span>
+            </div>
+            <div class="areaLegend">
+                <span>Alternative content for the legend</span>
+            </div>
+        </div>
+        <h1># Code examples</h1>
+        <a type="button" href="../../examples/advanced/dataviz_example.html">Dataviz example: </a><br />
+        <a type="button" href="../../examples/advanced/eventHandlers_display_information_about_plotted_cities.html">eventHandlers example: </a><br />
+        <a type="button" href="../../examples/advanced/range_selection_areas.html">Range selection example: </a><br />
+        <a type="button" href="../../examples/advanced/zoom_event_on_specific_area.html">Zoom event example: </a>
+
+    </div>
+
+
+</body>
+</html>
